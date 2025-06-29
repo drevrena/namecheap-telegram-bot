@@ -1,0 +1,25 @@
+{
+  "name": "namecheap-telegram-bot",
+  "version": "1.0.0",
+  "description": "",
+  "main": "dist/index.js",
+  "scripts": {
+    "clean": "rm -rf dist",
+    "build": "npm run clean && tsc",
+    "test": "jest"
+  },
+  "devDependencies": {
+    "@types/aws-lambda": "^8.10.150",
+    "@types/jest": "^30.0.0",
+    "@types/node-telegram-bot-api": "^0.64.9",
+    "jest": "^30.0.3",
+    "ts-jest": "^29.4.0",
+    "typescript": "^5.5.3"
+  },
+  "private": true,
+  "dependencies": {
+    "@aws-sdk/lib-dynamodb": "^3.839.0",
+    "axios": "^1.10.0",
+    "node-telegram-bot-api": "^0.66.0"
+  }
+}
