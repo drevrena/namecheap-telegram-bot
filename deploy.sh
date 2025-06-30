@@ -2,6 +2,9 @@
 
 set -e
 
+echo "🧪 Running tests..."
+npm run test
+
 echo "🔧 Building Typescript project..."
 npm run build
 

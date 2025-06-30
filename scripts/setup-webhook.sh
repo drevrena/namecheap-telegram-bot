@@ -22,4 +22,4 @@ curl -s -X POST "https://api.telegram.org/bot${BOT_TOKEN}/setWebhook" \
   -H "Content-Type: application/json" \
   -d "{\"url\": \"${WEBHOOK_URL}\"}"
 
-echo "✅ Webhook Telegram updated!"
+printf "\n✅  Webhook Telegram updated!"

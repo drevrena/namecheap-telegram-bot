@@ -1,6 +1,6 @@
 variable "aws_region" {
   type    = string
-  default = "eu-west-1"
+  default = "eu-west-3"
 }
 
 variable "function_name" {

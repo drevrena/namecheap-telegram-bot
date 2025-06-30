@@ -1,4 +1,4 @@
-export function getTimeLeftFormatted(startDate: Date, endDate: Date): string {
+export function getTimeLeft(startDate: Date, endDate: Date) {
     let diffMs: number = Math.abs(endDate.getTime() - startDate.getTime());
 
     const days: number = Math.floor(diffMs / (1000 * 60 * 60 * 24));
@@ -12,5 +12,10 @@ export function getTimeLeftFormatted(startDate: Date, endDate: Date): string {
 
     const seconds: number = Math.floor(diffMs / 1000);
 
-    return `${days}-${hours}-${minutes}-${seconds}`;
+    return {
+        days: days,
+        hours: hours,
+        minutes: minutes,
+        seconds: seconds
+    }
 }

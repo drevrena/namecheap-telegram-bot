@@ -1,23 +1,21 @@
-import { AuctionEvent, AuctionEventType } from './types/auction-webhook.types'
-import {handleEnded, handleClosed, handleWinnerRunner, handleOutbid, handleWin} from "./services/AuctionService";
+import {AuctionEvent, AuctionEventType} from './types/auction-webhook.types'
+import {handleClosed, handleEnded, handleOutbid, handleWin, handleWinnerRunner} from "./services/AuctionService";
 import {processTelegramWebhook} from "./services/TelegramService";
-import {Context} from "aws-lambda";
 
-export const handler = async (lambdaEvent: any, context: Context) => {
+export const handler = async (lambdaEvent: any) => {
 
-    console.log("Received event", JSON.stringify(lambdaEvent));
-    console.log("Received context", JSON.stringify(context));
+    console.log("Received body", JSON.stringify(lambdaEvent.body));
+    const body = JSON.parse(lambdaEvent.body);
     //Telegram Bot Webhook, handling two webhook in the same lambda for convenience
-    //Namecheap webhook doesn't have "result" field
-    if (lambdaEvent.result) {
-        await handleTelegramWebhook(lambdaEvent);
+    //Namecheap webhook doesn't have "update_id" field
+    if (body.update_id) {
+        await handleTelegramWebhook(body);
     } else {
-        await handleNamecheapWebhook(lambdaEvent);
+        await handleNamecheapWebhook(body);
     }
 };
 
-async function handleTelegramWebhook(lambdaEvent: any) {
-    const body = JSON.parse(lambdaEvent.body!);
+async function handleTelegramWebhook(body: any) {
     await processTelegramWebhook(body);
     return {
         statusCode: 200,
@@ -25,25 +23,25 @@ async function handleTelegramWebhook(lambdaEvent: any) {
     };
 }
 
-async function handleNamecheapWebhook(lambdaEvent: any) {
+async function handleNamecheapWebhook(body: any) {
 
-    const event: AuctionEvent = lambdaEvent.event;
+    const event: AuctionEvent = body.event;
 
     switch (event.type) {
         case AuctionEventType.AUCTION_ENDED:
-            handleEnded(event);
+            await handleEnded(event);
             break;
         case AuctionEventType.AUCTION_CLOSED:
-            handleClosed(event);
+            await handleClosed(event);
             break;
         case AuctionEventType.AUCTION_WINNER_RUNNERUP:
-            handleWinnerRunner(event);
+            await handleWinnerRunner(event);
             break;
         case AuctionEventType.AUCTION_OUTBID:
             await handleOutbid(event);
             break;
         case AuctionEventType.AUCTION_WINNER:
-            handleWin(event);
+            await handleWin(event);
             break
         default:
             console.log(`Error: Auction event type ${event.type} not implemented.`);

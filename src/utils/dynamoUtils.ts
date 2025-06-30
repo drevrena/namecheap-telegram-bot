@@ -10,12 +10,15 @@ export async function setDynamoData(
     chatId: number,
     messageId: number,
     data: any,
+    ttl: number = 86400,
 ) {
     const key = `${chatId}:${messageId}`;
+    const expire = Math.floor(Date.now() / 1000) + ttl;
 
     const item = {
         id: key,
         data,
+        expirationTime: expire
     };
 
     await docClient.send(

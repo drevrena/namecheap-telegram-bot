@@ -38,6 +38,35 @@ resource "aws_lambda_function" "lambda_webhook" {
   role = aws_iam_role.lambda_exec.arn
 }
 
+resource "aws_iam_role_policy_attachment" "lambda_logging" {
+  role       = aws_iam_role.lambda_exec.name
+  policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+}
+
+resource "aws_iam_role_policy" "lambda_dynamo_policy" {
+  name = "${var.function_name}_dynamo_access"
+  role = aws_iam_role.lambda_exec.id
+
+  policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [
+      {
+        Effect = "Allow",
+        Action = [
+          "dynamodb:GetItem",
+          "dynamodb:PutItem",
+          "dynamodb:UpdateItem",
+          "dynamodb:DeleteItem",
+          "dynamodb:Scan",
+          "dynamodb:Query"
+        ],
+        Resource = aws_dynamodb_table.telegram_message_data.arn
+      }
+    ]
+  })
+}
+
+
 resource "aws_lambda_function_url" "lambda_webhook_url" {
   function_name      = aws_lambda_function.lambda_webhook.function_name
   authorization_type = "NONE"

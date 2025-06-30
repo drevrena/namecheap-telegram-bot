@@ -1,5 +1,5 @@
 import {AuctionEvent} from "../types/auction-webhook.types";
-import {getTimeLeftFormatted} from "../utils/dateUtils";
+import {getTimeLeft} from "../utils/dateUtils";
 import {sendMessage} from "./TelegramService";
 import {setDynamoData} from "../utils/dynamoUtils";
 import {createReplyButtons} from "../utils/telegramUtils";
@@ -21,22 +21,25 @@ export function handleEnded(event: AuctionEvent) {
 export async function handleOutbid(event: AuctionEvent) {
 
     const {
-        sale: {name: domain, endDate},
+        sale: {name: domain, endDate, renewPrice},
         nextBid: {amount}
     } = event.data;
 
-    const timeLeft = getTimeLeftFormatted(new Date(), new Date(endDate));
+    const timeLeft = getTimeLeft(new Date(), new Date(endDate));
 
     const buttons: TelegramReplyButton[] = [
         {text: `👎 Don't Bid`, callback_data: "0"},
         {text: `👍 Okay Bid`, callback_data: "1"},
     ]
 
-    const{chatId, messageId} = await sendMessage(
-        `Hey, You got outbid on the domain ${domain}, You got ${timeLeft} left, the next bid is ${amount}`,
+    const {chatId, messageId} = await sendMessage(
+        `Hey, You got outbid on the domain 🌐 ${domain}, you got: \n` +
+        `📅 ${timeLeft.days} Days and ⏳<b>${timeLeft.hours}:${timeLeft.minutes}:${timeLeft.seconds}</b> \n` +
+        `💸 ${amount}$ + (${renewPrice}$)`,
+
         createReplyButtons(buttons));
 
-    await setDynamoData(chatId, messageId, event.data);
+    await setDynamoData(chatId, messageId, event);
 }
 
 export function handleWin(event: AuctionEvent) {
