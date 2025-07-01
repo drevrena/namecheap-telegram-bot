@@ -29,6 +29,7 @@ export interface Sale {
     id: string
     name: string
     status: string
+    minBid: number
     price: number
     renewPrice: number
     bidCount: number

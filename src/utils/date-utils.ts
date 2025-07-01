@@ -19,3 +19,7 @@ export function getTimeLeft(startDate: Date, endDate: Date) {
         seconds: seconds
     }
 }
+
+export function padTime(num: number) {
+    return String(num).padStart(2, '0');
+}

@@ -1,6 +1,6 @@
 // Set environment variables before importing anything
-process.env.DYNAMO_TABLE_NAME = 'test-table';
-process.env.AWS_REGION = 'us-east-1';
+process.env.AUCTION_TABLE_NAME = 'mock-table';
+process.env.AWS_REGION = 'eu-west-3';
 
 // Mock the AWS SDK modules before importing anything else
 jest.mock('@aws-sdk/client-dynamodb', () => {
@@ -27,10 +27,10 @@ jest.mock('@aws-sdk/lib-dynamodb', () => {
 });
 
 // Now import the module under test
-import { setDynamoData, getDynamoData } from '../../src/utils/dynamoUtils';
+import {AuctionDataRepository} from "../../src/repositories/auction-data-repository";
 import { GetCommand, PutCommand } from '@aws-sdk/lib-dynamodb';
 
-describe('dynamoUtils', () => {
+describe('auction-data-repository', () => {
   // Mock data
   const mockChatId = 123456789;
   const mockMessageId = 987654321;
@@ -44,22 +44,22 @@ describe('dynamoUtils', () => {
     mockSend.mockResolvedValue({});
   });
 
-  describe('setDynamoData', () => {
+  describe('set', () => {
     it('should create a PutCommand with the correct parameters', async () => {
       // Setup - mock the current time for consistent testing
       const mockNow = 1609459200000; // 2021-01-01T00:00:00.000Z
       jest.spyOn(Date, 'now').mockReturnValue(mockNow);
 
       // Execute
-      await setDynamoData(mockChatId, mockMessageId, mockData);
+      await AuctionDataRepository.set(mockChatId, mockMessageId, mockData);
 
       // Assert
       expect(PutCommand).toHaveBeenCalledWith({
-        TableName: process.env.DYNAMO_TABLE_NAME,
+        TableName: process.env.AUCTION_TABLE_NAME,
         Item: {
           id: `${mockChatId}:${mockMessageId}`,
           data: mockData,
-          expirationTime: Math.floor(mockNow / 1000) + 86400, // Default TTL
+          expirationTime: Math.floor(mockNow / 1000) + 259200, // Default TTL
         },
       });
       expect(mockSend).toHaveBeenCalledTimes(1);
@@ -75,11 +75,11 @@ describe('dynamoUtils', () => {
       jest.spyOn(Date, 'now').mockReturnValue(mockNow);
 
       // Execute
-      await setDynamoData(mockChatId, mockMessageId, mockData, customTtl);
+      await AuctionDataRepository.set(mockChatId, mockMessageId, mockData, customTtl);
 
       // Assert
       expect(PutCommand).toHaveBeenCalledWith({
-        TableName: process.env.DYNAMO_TABLE_NAME,
+        TableName: process.env.AUCTION_TABLE_NAME,
         Item: {
           id: `${mockChatId}:${mockMessageId}`,
           data: mockData,
@@ -92,14 +92,14 @@ describe('dynamoUtils', () => {
     });
   });
 
-  describe('getDynamoData', () => {
+  describe('get', () => {
     it('should create a GetCommand with the correct parameters', async () => {
       // Execute
-      await getDynamoData(mockChatId, mockMessageId);
+      await AuctionDataRepository.get(mockChatId, mockMessageId);
 
       // Assert
       expect(GetCommand).toHaveBeenCalledWith({
-        TableName: process.env.DYNAMO_TABLE_NAME,
+        TableName: process.env.AUCTION_TABLE_NAME,
         Key: { id: `${mockChatId}:${mockMessageId}` },
       });
       expect(mockSend).toHaveBeenCalledTimes(1);
@@ -117,7 +117,7 @@ describe('dynamoUtils', () => {
       mockSend.mockResolvedValueOnce(mockResponse);
 
       // Execute
-      const result = await getDynamoData(mockChatId, mockMessageId);
+      const result = await AuctionDataRepository.get(mockChatId, mockMessageId);
 
       // Assert
       expect(result).toEqual(mockData);
@@ -128,7 +128,7 @@ describe('dynamoUtils', () => {
       mockSend.mockResolvedValueOnce({ Item: undefined });
 
       // Execute
-      const result = await getDynamoData(mockChatId, mockMessageId);
+      const result = await AuctionDataRepository.get(mockChatId, mockMessageId);
 
       // Assert
       expect(result).toBeUndefined();

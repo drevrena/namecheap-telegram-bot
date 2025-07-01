@@ -24,13 +24,14 @@ resource "aws_lambda_function" "lambda_webhook" {
   filename      = var.lambda_zip_path
   handler       = var.lambda_handler
   runtime       = "nodejs22.x"
+  timeout       = 15
 
   environment {
     variables = {
       BOT_TOKEN         = var.bot_token
       CHAT_ID           = var.chat_id
       NAMECHEAP_API_KEY = var.namecheap_api_key
-      DYNAMO_TABLE_NAME = aws_dynamodb_table.telegram_message_data.name
+      AUCTION_TABLE_NAME = aws_dynamodb_table.telegram_message_data.name
     }
   }
 
