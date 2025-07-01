@@ -54,30 +54,22 @@ The project uses Terraform to deploy all necessary AWS resources:
    aws configure
    ```
 
-2. Create a `secrets.tfvars` file with sensitive information:
+2. Set up your sensitive variables
 
-   You can use the provided setup script to create this file:
+Copy the example file `secrets.tfvars.example` and fill in your secret keys and credentials:
+
    ```bash
-   chmod +x setup.sh
-   ./setup.sh
+   cp secrets.tfvars.example secrets.tfvars
    ```
 
-   The script will ask for your Telegram bot token, chat ID, and Namecheap API key, then create the secrets.tfvars file with the following format:
-   ```
-   bot_token = "your_telegram_bot_token"
-   chat_id = "your_telegram_chat_id"
-   namecheap_api_key = "your_namecheap_api_key"
-   ```
 
-   If the file already exists, the script will ask if you want to override it.
-
-4. Run the deploy script:
+3. Run the deploy script:
    ```bash
    chmod +x deploy.sh
    ./deploy.sh
    ```
 
-5. The deployment will output a Lambda function URL that you can use for the Namecheap webhook.
+4. The deployment will output a Lambda function URL that you can use for the Namecheap webhook.
 
 ## Usage
 
