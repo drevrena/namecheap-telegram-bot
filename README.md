@@ -2,6 +2,8 @@
 
 A serverless Telegram bot that integrates with Namecheap's auction system to notify users about auction events and allow them to respond to outbids directly from Telegram.
 
+![screenshot](https://i.imgur.com/GosFAzq.png)
+
 ## 📋 Features
 
 - Receives and processes Namecheap auction webhooks
