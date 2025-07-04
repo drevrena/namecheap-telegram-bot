@@ -13,8 +13,13 @@ export function handleClosed(event: AuctionEvent) {
 
 }
 
-export function handleEnded(event: AuctionEvent) {
-    console.log("handleEnded");
+export async function handleEnded(event: AuctionEvent) {
+    const sale: Sale = await getAuctionInfo(event.data.sale.id);
+
+    const {chatId, messageId} = await sendMessage(`Hey, the auction for the domain 🌐 ${sale.name} expired!`);
+
+    console.log(`Removing data due to expired auction for saleId: ${sale.id} (${sale.name}`)
+    await AuctionDataRepository.delete(chatId, messageId);
 }
 
 export async function handleOutbid(event: AuctionEvent) {
