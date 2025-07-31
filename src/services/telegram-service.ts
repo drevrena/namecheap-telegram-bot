@@ -33,6 +33,11 @@ async function commandHandler(message: TelegramBot.Message) {
     const chatId = replyMessage?.chat.id;
     const messageId = replyMessage?.message_id;
 
+    //Someone found and started the bot
+    if (message.chat.id != chatId) {
+        return
+    }
+
     if (!chatId || !messageId) {
         await sendMessage(`Please reply to the message with the bid Amount!`);
         return;
